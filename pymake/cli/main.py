@@ -11,7 +11,7 @@ import pymake.command, pymake.process
 
 import gc
 
-if __name__ == '__main__':
+def main():
   if sys.version_info < (3,0):
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
     sys.stderr = os.fdopen(sys.stderr.fileno(), 'w', 0)
@@ -25,3 +25,7 @@ if __name__ == '__main__':
   pymake.command.main(sys.argv[1:], os.environ, os.getcwd(), cb=sys.exit)
   pymake.process.ParallelContext.spin()
   assert False, "Not reached"
+
+
+if __name__ == '__main__':
+    main()
