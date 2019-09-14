@@ -15,7 +15,5 @@ install:
     - pip install -e .
 script:
     - pytest --gmake=make -n 4 . --cov=.
-env:
-    - CODECOV_TOKEN=50b5404b-09c4-4915-b59f-01c0948b857d
 after_success:
     - codecov
