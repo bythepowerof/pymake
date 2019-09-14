@@ -2,3 +2,6 @@
 tests/*makelog
 .ropeproject/
 *.egg-info/*
+.coverage
+.coverage.*
+coverage.xml
