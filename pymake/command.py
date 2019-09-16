@@ -115,7 +115,8 @@ class _MakeContext(object):
                                           targets=self.targets,
                                           keepgoing=self.options.keepgoing,
                                           silent=self.options.silent,
-                                          justprint=self.options.justprint)
+                                          justprint=self.options.justprint,
+                                          yamlout=self.options.yamlout)
 
             self.restarts += 1
 
@@ -200,6 +201,9 @@ def main(args, env, cwd, cb):
         op.add_option('-n', '--just-print', '--dry-run', '--recon',
                       action="store_true",
                       dest="justprint", default=False)
+        op.add_option('-y', '--yaml-out',
+                      action="store_true",
+                      dest="yamlout", default=False)
 
         options, arguments1 = op.parse_args(parsemakeflags(env))
         options, arguments2 = op.parse_args(args, values=options)
