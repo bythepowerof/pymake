@@ -253,7 +253,7 @@ def prepare_command(cline, cwd, loc):
 
     return executable, argv
 
-def call(cline, env, cwd, loc, cb, context, echo, justprint=False, yamlout=False):
+def call(cline, env, cwd, loc, cb, context, echo, justprint=False, yamlout=False, yamlin=None):
     executable, argv = prepare_command(cline, cwd, loc)
 
     if not len(argv):
@@ -270,12 +270,12 @@ def call(cline, env, cwd, loc, cb, context, echo, justprint=False, yamlout=False
         return
 
     context.call(argv, executable=executable, shell=False, env=env, cwd=cwd, cb=cb,
-                 echo=echo, justprint=justprint, yamlout=yamlout)
+                 echo=echo, justprint=justprint, yamlout=yamlout, yamlin=None)
 
 def call_native(module, method, argv, env, cwd, loc, cb, context, echo, justprint=False,
-                pycommandpath=None, yamlout=False):
+                pycommandpath=None, yamlout=False, yamlin=None):
     context.call_native(module, method, argv, env=env, cwd=cwd, cb=cb,
-                        echo=echo, justprint=justprint, pycommandpath=pycommandpath, yamlout=yamlout)
+                        echo=echo, justprint=justprint, pycommandpath=pycommandpath, yamlout=yamlout, yamlin=None)
 
 def statustoresult(status):
     """
@@ -454,7 +454,7 @@ class ParallelContext(object):
         assert self.jcount > 1 or not len(self.pending), "Serial execution error defering %r %r %r: currently pending %r" % (cb, args, kwargs, self.pending)
         self.pending.append((cb, args, kwargs))
 
-    def _docall_generic(self, pool, job, cb, echo, justprint, yamlout):
+    def _docall_generic(self, pool, job, cb, echo, justprint, yamlout, yamlin):
         if echo is not None:
             print(echo)
         processcb = job.get_callback(ParallelContext._condition)
@@ -464,22 +464,22 @@ class ParallelContext(object):
             pool.apply_async(job_runner, args=(job,), callback=processcb)
         self.running.append((job, cb))
 
-    def call(self, argv, shell, env, cwd, cb, echo, justprint=False, executable=None, yamlout=False):
+    def call(self, argv, shell, env, cwd, cb, echo, justprint=False, executable=None, yamlout=False, yamlin=None):
         """
         Asynchronously call the process
         """
 
         job = PopenJob(argv, executable=executable, shell=shell, env=env, cwd=cwd)
-        self.defer(self._docall_generic, self.processpool, job, cb, echo, justprint, yamlout)
+        self.defer(self._docall_generic, self.processpool, job, cb, echo, justprint, yamlout, yamlin)
 
     def call_native(self, module, method, argv, env, cwd, cb,
-                    echo, justprint=False, yamlout=False, pycommandpath=None):
+                    echo, justprint=False, yamlout=False, yamlin=None, pycommandpath=None):
         """
         Asynchronously call the native function
         """
 
         job = PythonJob(module, method, argv, env, cwd, pycommandpath)
-        self.defer(self._docall_generic, self.processpool, job, cb, echo, justprint, yamlout)
+        self.defer(self._docall_generic, self.processpool, job, cb, echo, justprint, yamlout, yamlin)
 
     @staticmethod
     def _waitany(condition):

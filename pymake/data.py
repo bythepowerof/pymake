@@ -1451,7 +1451,7 @@ def getcommandsforrule(rule, target, makefile, prerequisites, stem):
                 echo = "%s$ %s" % (c.loc, cline)
             if not isNative:
                 yield _CommandWrapper(cline, ignoreErrors=ignoreErrors, env=env, cwd=makefile.workdir, loc=c.loc, context=makefile.context,
-                                      echo=echo, justprint=makefile.justprint, yamlout=makefile.yamlout)
+                                      echo=echo, justprint=makefile.justprint, yamlout=makefile.yamlout, yamlin=makefile.yamlin)
             else:
                 f, s, e = v.get("PYCOMMANDPATH", True)
                 if e:
@@ -1623,7 +1623,7 @@ class Makefile(object):
     def __init__(self, workdir=None, env=None, restarts=0, make=None,
                  makeflags='', makeoverrides='',
                  makelevel=0, context=None, targets=(), keepgoing=False,
-                 silent=False, justprint=False, yamlout=False):
+                 silent=False, justprint=False, yamlout=False, yamlin=None):
         self.defaulttarget = None
 
         if env is None:
@@ -1640,6 +1640,7 @@ class Makefile(object):
         self.silent = silent
         self.justprint = justprint
         self.yamlout = yamlout
+        self.yamlin = yamlin
         self._patternvariables = [] # of (pattern, variables)
         self.implicitrules = []
         self.parsingfinished = False

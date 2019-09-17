@@ -116,7 +116,8 @@ class _MakeContext(object):
                                           keepgoing=self.options.keepgoing,
                                           silent=self.options.silent,
                                           justprint=self.options.justprint,
-                                          yamlout=self.options.yamlout)
+                                          yamlout=self.options.yamlout,
+                                          yamlin=self.options.yamlin)
 
             self.restarts += 1
 
@@ -204,6 +205,9 @@ def main(args, env, cwd, cb):
         op.add_option('-y', '--yaml-out',
                       action="store_true",
                       dest="yamlout", default=False)
+        op.add_option('-z', '--yaml-in',
+                      dest="yamlin", default=None,
+                      help="read from a yaml file or <-> for stdin")
 
         options, arguments1 = op.parse_args(parsemakeflags(env))
         options, arguments2 = op.parse_args(args, values=options)
@@ -233,6 +237,9 @@ def main(args, env, cwd, cb):
         if options.justprint:
             shortflags.append('n')
 
+        if options.yamlout:
+            shortflags.append('y')
+
         loglevel = logging.WARNING
         if options.verbose:
             loglevel = logging.DEBUG
@@ -254,6 +261,9 @@ def main(args, env, cwd, cb):
         makeflags = ''.join(shortflags)
         if len(longflags):
             makeflags += ' ' + ' '.join(longflags)
+
+        if options.yamlin is not None:
+            longflags.append('-z%s' % (options.yamlin))
 
         logging.basicConfig(level=loglevel, **logkwargs)
 
