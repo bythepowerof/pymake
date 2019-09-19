@@ -1460,7 +1460,7 @@ def getcommandsforrule(rule, target, makefile, prerequisites, stem):
                                      env=env, cwd=makefile.workdir,
                                      loc=c.loc, context=makefile.context,
                                      echo=echo, justprint=makefile.justprint,
-                                     pycommandpath=e)
+                                     pycommandpath=e, yamlout=makefile.yamlout, yamlin=makefile.yamlin)
 
 class Rule(object):
     """
