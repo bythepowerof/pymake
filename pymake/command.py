@@ -14,6 +14,8 @@ from optparse import OptionParser
 from . import data, parserdata, process, util
 from pymake import errors
 
+from pymake import makeyaml
+
 # TODO: If this ever goes from relocatable package to system-installed, this may need to be
 # a configured-in path.
 
@@ -132,6 +134,12 @@ class _MakeContext(object):
                 self.context.defer(self.cb, 2)
 
             return
+
+        if self.options.yamlout:
+            print("doing yaml")
+            makeyaml.output(self.makefile)
+            exit
+
 
         if len(self.targets) == 0:
             if self.makefile.defaulttarget is None:
