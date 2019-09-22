@@ -1,10 +1,21 @@
 import sys
 from ruamel.yaml import YAML
+from ruamel.yaml.scalarstring import LiteralScalarString, preserve_literal
+
+# stolen for data.py for variable defs
+FLAVOR_RECURSIVE = 0
+FLAVOR_SIMPLE = 1
+FLAVOR_APPEND = 2
+
+SOURCE_OVERRIDE = 0     # take this
+SOURCE_COMMANDLINE = 1  # and this
+SOURCE_MAKEFILE = 2     # and this
+SOURCE_ENVIRONMENT = 3
+SOURCE_AUTOMATIC = 4
+SOURCE_IMPLICIT = 5
 
 yaml=YAML()
 yaml.default_flow_style = False
-
-from io import StringIO
 
 import dumper 
 dumper.max_depth = 90
@@ -14,30 +25,47 @@ def output(makefile):
     # code = yaml.load(makefile)
     # yaml.dump(code, sys.stdout)
 
-    output = {}
+    output = {'rules': [], 'variables': {}}
+    ruleaddr = {}
 
+    for v in makefile.variables:
+        if v[2] in [SOURCE_OVERRIDE,SOURCE_COMMANDLINE, SOURCE_MAKEFILE]:
+            # print("{}={}".format(v[0], makefile.variables.get(v[0], False)))
+            output['variables'][v[0]] = preserveliteral(makefile.variables.get(v[0], False)[2])
+
+    # targets
     for k,v in makefile._targets.items():
-        # print(k)
-        output[k] = {'rules': []}
         for r in v.rules:
-            # print(r)
+            processed = False
+            for ra, rr in ruleaddr.items():
+                if r is ra:
+                    rr['target'].append(k)
+                    processed = True
+                    break
 
-            rule = {'prereqs': r.prerequisites, 'doublecolon': r.doublecolon, 'commands': []}
+            if processed:
+                break
 
-            #rule['commands'] = r.commands
+            rule = {'target': [k], 'doublecolon': r.doublecolon, 'commands': []}
+
+            if r.prerequisites != []:
+                rule['prereqs'] =  r.prerequisites
+
             for c in r.commands:
-                # sio = StringIO()
+                rule['commands'].append(preserveliteral(c.to_source()))
 
-                # c.resolve(makefile, makefile.variables, sio)
-                # sio.seek(0)
-                # print(sio.getvalue())
-                rule['commands'].append(c.to_source())
+            output['rules'].append(rule)
 
-                # print(c.s)
-            output[k]['rules'].append(rule)
+            ruleaddr[r] = rule
 
     # code = yaml.load(output)
     yaml.dump(output, sys.stdout)
     # dumper.dump(output)
+
+def preserveliteral(val):
+    if '\n' in val:
+        return preserve_literal(val)
+    else:
+        return val
 
 

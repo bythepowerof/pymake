@@ -136,9 +136,8 @@ class _MakeContext(object):
             return
 
         if self.options.yamlout:
-            print("doing yaml")
             makeyaml.output(self.makefile)
-            exit
+            exit()
 
 
         if len(self.targets) == 0:
