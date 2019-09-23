@@ -27,6 +27,7 @@ def output(makefile):
 
     output = {'rules': [], 'variables': {}}
     ruleaddr = {}
+    ruleempty = {}
 
     for v in makefile.variables:
         if v[2] in [SOURCE_OVERRIDE,SOURCE_COMMANDLINE, SOURCE_MAKEFILE]:
@@ -35,8 +36,18 @@ def output(makefile):
 
     # targets
     for k,v in makefile._targets.items():
+        processed = False
+
+        print(k)
+
         for r in v.rules:
-            processed = False
+            if r.commands == []:
+                if k in ruleempty.keys():
+                    ruleempty[k]['prereqs'].extend(r.prerequisites)
+                    # print(ruleempty[k]['prereqs'])
+                    continue
+
+
             for ra, rr in ruleaddr.items():
                 if r is ra:
                     rr['target'].append(k)
@@ -56,7 +67,10 @@ def output(makefile):
 
             output['rules'].append(rule)
 
-            ruleaddr[r] = rule
+            if r.commands == []:
+                ruleempty[k] = rule
+            else:
+                ruleaddr[r] = rule
 
     # code = yaml.load(output)
     yaml.dump(output, sys.stdout)
