@@ -38,13 +38,10 @@ def output(makefile):
     for k,v in makefile._targets.items():
         processed = False
 
-        print(k)
-
         for r in v.rules:
             if r.commands == []:
                 if k in ruleempty.keys():
                     ruleempty[k]['prereqs'].extend(r.prerequisites)
-                    # print(ruleempty[k]['prereqs'])
                     continue
 
 
