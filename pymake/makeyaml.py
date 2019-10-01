@@ -2,6 +2,9 @@ import sys
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import LiteralScalarString, preserve_literal
 from . import data
+from . import parserdata
+from . import functions
+from . import parser
 
 #Variables = data.Variables
 
@@ -26,40 +29,31 @@ dumper.max_depth = 90
 def parsefile(yaml_file, makefile):
     all_config_data = yaml.load(yaml_file)
 
-    # xx = {'variables': [], 'stmts': []}
+    vars = []
 
     for k,v in all_config_data['variables'].items():
-         makefile.variables.set(k, FLAVOR_SIMPLE, SOURCE_MAKEFILE, v)
+        if '\n' in v:
+            vars.append("define {}\n{}\nendef".format(k, v))
+        else:
+            vars.append("{} = {}".format(k, v))
+        print("\n".join(vars))
 
     for v in all_config_data['rules']:
-
         if 'prereqs' not in v:
             v['prereqs'] = []
-        r = data.Rule( v['prereqs'], v['doublecolon'], '-', False)
+
+        if v['doublecolon']:
+            dc = ' :: '
+        else:
+            dc = ' : '
+
+        vars.append("{} {} {}".format(' '.join(v['target']), dc, ' '.join(v['prereqs'])))
 
         for c in v['commands']:
-            command = data.Expansion()
-            command.appendstr(c)
-            r.addcommand(command)
+            vars.append('\t{}'.format(c))
 
-        for t in v['target']:
+    parser.parsestring("\n".join(vars), 'xx').execute(makefile)
 
-            if t not in makefile._targets:
-                makefile._targets[t] = data.Target(t, makefile)
-            
-            targ = makefile._targets[t]
-
-
-            targ.addrule(r)
-            # targ.addrule(data.PatternRule(t, v['prereqs'], v['doublecolon'], '-'))
-
-    #dumper.dump(makefile._targets)
-
-    # fd = open(pathname, "rU")
-    # stmts = parsestring(fd.read(), pathname)
-    # stmts.mtime = os.fstat(fd.fileno()).st_mtime
-    # fd.close()
-    # return stmts
 
 def output(makefile):
     # dumper.dump(makefile._targets)
@@ -72,7 +66,6 @@ def output(makefile):
 
     for v in makefile.variables:
         if v[2] in [SOURCE_OVERRIDE,SOURCE_COMMANDLINE, SOURCE_MAKEFILE]:
-            # print("{} {} {} {}={}".format(v[0], v[1],v[2],v[3],makefile.variables.get(v[0], False)))
             output['variables'][v[0]] = preserveliteral(makefile.variables.get(v[0], False)[2])
 
     # targets
