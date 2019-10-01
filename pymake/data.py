@@ -7,6 +7,8 @@ from functools import reduce
 from . import parserdata, parser, functions, process, util, implicit
 from . import globrelative
 from pymake import errors
+from pymake import makeyaml
+
 
 try:
     from io import StringIO
@@ -1799,6 +1801,35 @@ class Makefile(object):
                 self.variables.append('MAKEFILE_LIST', Variables.SOURCE_AUTOMATIC, path, None, self)
                 stmts.execute(self, weak=weak)
                 self.gettarget(path).explicit = True
+
+
+    def includeyaml(self, path, required=True, weak=False, loc=None):
+        """
+        Include the yaml at `path`.
+        """
+        if path == '-':
+            makeyaml.parsefile(sys.stdin, self)
+            self.variables.append('MAKEFILE_LIST', Variables.SOURCE_AUTOMATIC, path, None, self)
+            self.gettarget(path).explicit = True
+        else:
+            if self._globcheck.search(path):
+                paths = globrelative.glob(self.workdir, path)
+            else:
+                paths = [path]
+            for path in paths:
+                self.included.append((path, required))
+                fspath = util.normaljoin(self.workdir, path)
+                if os.path.exists(fspath):
+                    # do we need to include dependant yaml?
+                    # if weak:
+                    #     stmts = parser.parsedepfile(fspath)
+                    # else:
+                    with open(fspath) as yaml_file:
+                        makeyaml.parsefile(yaml_file, self)
+                    # end else
+                    self.variables.append('MAKEFILE_LIST', Variables.SOURCE_AUTOMATIC, path, None, self)
+                    self.gettarget(path).explicit = True
+
 
     def addvpath(self, pattern, dirs):
         """

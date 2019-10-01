@@ -127,6 +127,8 @@ class _MakeContext(object):
                 self.ostmts.execute(self.makefile)
                 for f in self.options.makefiles:
                     self.makefile.include(f)
+                for f in self.options.yamlin:
+                    self.makefile.includeyaml(f)
                 self.makefile.finishparsing()
                 self.makefile.remakemakefiles(self.remakecb)
             except errors.MakeError as e:
@@ -213,8 +215,9 @@ def main(args, env, cwd, cb):
                       action="store_true",
                       dest="yamlout", default=False)
         op.add_option('-z', '--yaml-in',
-                      dest="yamlin", default=None,
-                      help="read from a yaml file or <-> for stdin")
+                      dest="yamlin", 
+                      default=[],
+                      action='append')
 
         options, arguments1 = op.parse_args(parsemakeflags(env))
         options, arguments2 = op.parse_args(args, values=options)
@@ -280,7 +283,7 @@ def main(args, env, cwd, cb):
             print("make.py[%i]: Entering directory '%s'" % (makelevel, workdir))
             sys.stdout.flush()
 
-        if len(options.makefiles) == 0:
+        if len(options.makefiles) == 0 and len(options.yamlin) == 0:
             if os.path.exists(util.normaljoin(workdir, 'Makefile')):
                 options.makefiles.append('Makefile')
             else:
