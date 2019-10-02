@@ -72,14 +72,20 @@ def output(makefile):
     for k,v in makefile._targets.items():
         processed = False
 
-        for r in v.rules:
-            if r.commands == []:
+        for rx in v.rules:
+            
+            if isinstance(rx, data.PatternRuleInstance):
+                thisrule = rx.prule
+            else:
+                thisrule = rx
+
+            if thisrule.commands == []:
                 if k in ruleempty.keys():
-                    ruleempty[k]['prereqs'].extend(r.prerequisites)
+                    ruleempty[k]['prereqs'].extend(thisrule.prerequisites)
                     continue
 
             for ra, rr in ruleaddr.items():
-                if r is ra:
+                if thisrule is ra:
                     rr['target'].append(k)
                     processed = True
                     break
@@ -87,23 +93,25 @@ def output(makefile):
             if processed:
                 break
 
-            rule = {'target': [k], 'doublecolon': r.doublecolon, 'commands': []}
+            rule = {'target': [k], 'doublecolon': thisrule.doublecolon, 'commands': []}
 
-            if r.prerequisites != []:
-                rule['prereqs'] =  r.prerequisites
+            if thisrule.prerequisites != []:
+                rule['prereqs'] =  thisrule.prerequisites
 
-            if hasattr(r, 'stem'):
-                rule['stem'] = r.stem
+            if hasattr(thisrule, 'targetpatterns'):
+                rule['targetpatterns'] = []
+                for t in thisrule.targetpatterns:
+                    rule['targetpatterns'].append(t.__str__())
 
-            for c in r.commands:
+            for c in thisrule.commands:
                 rule['commands'].append(preserveliteral(c.to_source()))
 
             output['rules'].append(rule)
 
-            if r.commands == []:
+            if thisrule.commands == []:
                 ruleempty[k] = rule
             else:
-                ruleaddr[r] = rule
+                ruleaddr[thisrule] = rule
 
     yaml.dump(output, sys.stdout)
 
