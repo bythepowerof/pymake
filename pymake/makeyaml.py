@@ -2,29 +2,22 @@ import sys
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import LiteralScalarString, preserve_literal
 from . import data
-from . import parserdata
-from . import functions
 from . import parser
 
-#Variables = data.Variables
+# stolen for data.py for Variable defs
+# FLAVOR_RECURSIVE = 0
+# FLAVOR_SIMPLE = 1
+# FLAVOR_APPEND = 2
 
-# stolen for data.py for variable defs
-FLAVOR_RECURSIVE = 0
-FLAVOR_SIMPLE = 1
-FLAVOR_APPEND = 2
-
-SOURCE_OVERRIDE = 0     # take this
-SOURCE_COMMANDLINE = 1  # and this
-SOURCE_MAKEFILE = 2     # and this
-SOURCE_ENVIRONMENT = 3
-SOURCE_AUTOMATIC = 4
-SOURCE_IMPLICIT = 5
+# SOURCE_OVERRIDE = 0     # take this
+# SOURCE_COMMANDLINE = 1  # and this
+# SOURCE_MAKEFILE = 2     # and this
+# SOURCE_ENVIRONMENT = 3
+# SOURCE_AUTOMATIC = 4
+# SOURCE_IMPLICIT = 5
 
 yaml=YAML()
 yaml.default_flow_style = False
-
-import dumper 
-dumper.max_depth = 90
 
 def parsefile(yaml_file, makefile):
     all_config_data = yaml.load(yaml_file)
@@ -47,7 +40,10 @@ def parsefile(yaml_file, makefile):
         else:
             dc = ' : '
 
-        vars.append("{} {} {}".format(' '.join(v['target']), dc, ' '.join(v['prereqs'])))
+        if 'targetpatterns' in v:
+            vars.append("{} {} {}: {}".format(' '.join(v['targets']), dc, ' '.join(v['targetpatterns']), ' '.join(v['prereqs'])))
+        else:
+            vars.append("{} {} {}".format(' '.join(v['targets']), dc, ' '.join(v['prereqs'])))
 
         for c in v['commands']:
             vars.append('\t{}'.format(c))
@@ -56,16 +52,12 @@ def parsefile(yaml_file, makefile):
 
 
 def output(makefile):
-    # dumper.dump(makefile._targets)
-    # code = yaml.load(makefile)
-    # yaml.dump(code, sys.stdout)
-
     output = {'rules': [], 'variables': {}}
     ruleaddr = {}
     ruleempty = {}
 
     for v in makefile.variables:
-        if v[2] in [SOURCE_OVERRIDE,SOURCE_COMMANDLINE, SOURCE_MAKEFILE]:
+        if v[2] in [data.Variables.SOURCE_OVERRIDE, data.Variables.SOURCE_COMMANDLINE, data.Variables.SOURCE_MAKEFILE]:
             output['variables'][v[0]] = preserveliteral(makefile.variables.get(v[0], False)[2])
 
     # targets
@@ -86,14 +78,14 @@ def output(makefile):
 
             for ra, rr in ruleaddr.items():
                 if thisrule is ra:
-                    rr['target'].append(k)
+                    rr['targets'].append(k)
                     processed = True
                     break
 
             if processed:
                 break
 
-            rule = {'target': [k], 'doublecolon': thisrule.doublecolon, 'commands': []}
+            rule = {'targets': [k], 'doublecolon': thisrule.doublecolon, 'commands': []}
 
             if thisrule.prerequisites != []:
                 rule['prereqs'] =  thisrule.prerequisites
@@ -120,5 +112,3 @@ def preserveliteral(val):
         return preserve_literal(val)
     else:
         return val
-
-
