@@ -952,7 +952,6 @@ class EmptyDirective(Statement):
 
     def execute(self, makefile, context):
         v = self.exp.resolvestr(makefile, makefile.variables)
-        print(v)
         if v.strip() != '':
             raise errors.DataError("Line expands to non-empty value", self.exp.loc)
 

@@ -445,9 +445,7 @@ class ParallelContext(object):
     def run(self):
         while len(self.pending) and len(self.running) < self.jcount:
             cb, args, kwargs = self.pending.popleft()
-            # print("start cb={}".format(cb.__name__), file=sys.stderr)
             cb(*args, **kwargs)
-            # print("end cb={}".format(cb.__name__), file=sys.stderr)
 
 
     def defer(self, cb, *args, **kwargs):
