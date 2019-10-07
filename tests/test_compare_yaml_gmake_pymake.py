@@ -49,25 +49,36 @@ def run_test(makefile, make, logfile, options, commandline):
     (pass, message).
     """
 
-    # stdin = sys.stdin
-    # stdout = subprocess.PIPE
+    stdin = sys.stdin
+    stdout = subprocess.PIPE
+
+    i=0
 
     # length = len(commandline)
 
-    # for i in range(length):
+    for c in commandline:
     #     # if i == length - 1:
     #     #     stdout = open('stdout', 'w')
-    #     stderr = open('{}.stderr'.format(i), 'w')
-    #     process = subprocess.Popen(commandline[i], stdin=stdin, stdout=stdout, stderr=stderr)
-    #     stdin = process.stdout
-        
-    # process.communicate()
-    # retcode = process.returncode
+        if i == 0:
+            stderr = open('{}.stderr'.format(i), 'w')
+            # process = subprocess.Popen(c, stdin=stdin, stdout=stdout, stderr=stderr)
+            process = subprocess.Popen(make + c, stdout=stdout, stderr=stderr, env=options['env'])
+        else:
+            stderr = open('{}.stderr'.format(i), 'w')
+            # process = subprocess.Popen(c, stdin=stdin, stdout=stdout, stderr=stderr)
+            process = subprocess.Popen(make + c, stdin=stdin, stdout=stdout, stderr=stderr, env=options['env'])
 
-    p = subprocess.Popen(make + options['commandline'], stdout=subprocess.PIPE,
-stderr=subprocess.STDOUT, env=options['env'])
-    stdout, _ = p.communicate()
-    retcode = p.returncode
+        i += 1
+
+        stdin = process.stdout
+        
+    stdout, _ = process.communicate()
+    retcode = process.returncode
+
+#     p = subprocess.Popen(make + options['commandline'], stdout=subprocess.PIPE,
+# stderr=subprocess.STDOUT, env=options['env'])
+#     stdout, _ = p.communicate()
+#     retcode = p.returncode
 
     stdout = stdout.decode('utf-8')
 
@@ -137,7 +148,8 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
 
     # For some reason, MAKEFILE_LIST uses native paths in GNU make on Windows
     # (even in MSYS!) so we pass both TESTPATH and NATIVE_TESTPATH
-    cline = ['-f', os.path.abspath(makefile), 'TESTPATH=%s' % THISDIR.replace('\\','/'), 'NATIVE_TESTPATH=%s' % THISDIR]
+    #cline = ['-f', os.path.abspath(makefile), 'TESTPATH=%s' % THISDIR.replace('\\','/'), 'NATIVE_TESTPATH=%s' % THISDIR]
+    cline = ['TESTPATH=%s' % THISDIR.replace('\\','/'), 'NATIVE_TESTPATH=%s' % THISDIR]
     if sys.platform == 'win32':
         #XXX: hack so we can specialize the separator character on windows.
         # we really shouldn't need this, but y'know
@@ -147,7 +159,7 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
         'returncode': 0,
         'grepfor': None,
         'env': dict(os.environ),
-        'commandline': cline,
+        # 'commandline': cline,
         'pass': True,
         'skip': False,
         }
@@ -163,8 +175,9 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
     # modify the default options that both makes will inherit and customist
     gmake_temp_dir = str(tmp_path_factory.mktemp("gmake"))
     pymake_temp_dir = str(tmp_path_factory.mktemp("pymake"))
-    gmakeoptions['commandline'] = ['-C', gmake_temp_dir] + gmakeoptions['commandline']
-    pymakeoptions['commandline'] = ['-C', pymake_temp_dir] + pymakeoptions['commandline']
+    gmakeoptions['commandline'] = ['-f', os.path.abspath(makefile), '-C', gmake_temp_dir] + cline
+    pymakeoptions['commandline1'] = ['-f', os.path.abspath(makefile), '-y', '-C', pymake_temp_dir] + cline
+    pymakeoptions['commandline2'] = ['-z', '-', '-C', pymake_temp_dir] + cline
 
     if gmakeoptions['skip']:
         gmakepass, gmakemsg = True, ''
@@ -186,7 +199,7 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
         pymakepass, pymakemsg = True, ''
     else:
         pymakepass, pymakemsg = run_test(makefile, pymake,
-                                        makefile + '.pymakelog', pymakeoptions, [pymakeoptions['commandline']])
+                                        makefile + '.pymakelog', pymakeoptions, [pymakeoptions['commandline1'], pymakeoptions['commandline2']])
 
     if pymakeoptions['pass']:
         if not pymakepass:
