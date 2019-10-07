@@ -43,20 +43,31 @@ class ParentDict(dict):
 
         return self.parent[k]
 
-def run_test(makefile, make, logfile, options):
+def run_test(makefile, make, logfile, options, commandline):
     """
     Given a makefile path, test it with a given `make` and return
     (pass, message).
     """
 
-    p1 = subprocess.Popen(make + options['commandline1'], stdout=subprocess.PIPE,
-stderr=subprocess.STDOUT, env=options['env'])
+    # stdin = sys.stdin
+    # stdout = subprocess.PIPE
 
-    p2 = subprocess.Popen(make + options['commandline2'], stdin=p1.stdout, stdout=subprocess.PIPE,
-stderr=subprocess.STDOUT, env=options['env'])
+    # length = len(commandline)
 
-    stdout, _ = p2.communicate()
-    retcode = p2.returncode
+    # for i in range(length):
+    #     # if i == length - 1:
+    #     #     stdout = open('stdout', 'w')
+    #     stderr = open('{}.stderr'.format(i), 'w')
+    #     process = subprocess.Popen(commandline[i], stdin=stdin, stdout=stdout, stderr=stderr)
+    #     stdin = process.stdout
+        
+    # process.communicate()
+    # retcode = process.returncode
+
+    p = subprocess.Popen(make + options['commandline'], stdout=subprocess.PIPE,
+stderr=subprocess.STDOUT, env=options['env'])
+    stdout, _ = p.communicate()
+    retcode = p.returncode
 
     stdout = stdout.decode('utf-8')
 
@@ -126,8 +137,7 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
 
     # For some reason, MAKEFILE_LIST uses native paths in GNU make on Windows
     # (even in MSYS!) so we pass both TESTPATH and NATIVE_TESTPATH
-    cline1 = ['-f', os.path.abspath(makefile), '-y', '-s', 'TESTPATH=%s' % THISDIR.replace('\\','/'), 'NATIVE_TESTPATH=%s' % THISDIR]
-    cline2 = ['-z', '-', '-s', 'TESTPATH=%s' % THISDIR.replace('\\','/'), 'NATIVE_TESTPATH=%s' % THISDIR]
+    cline = ['-f', os.path.abspath(makefile), 'TESTPATH=%s' % THISDIR.replace('\\','/'), 'NATIVE_TESTPATH=%s' % THISDIR]
     if sys.platform == 'win32':
         #XXX: hack so we can specialize the separator character on windows.
         # we really shouldn't need this, but y'know
@@ -137,8 +147,7 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
         'returncode': 0,
         'grepfor': None,
         'env': dict(os.environ),
-        'commandline1': cline1,
-        'commandline2': cline2,
+        'commandline': cline,
         'pass': True,
         'skip': False,
         }
@@ -154,16 +163,14 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
     # modify the default options that both makes will inherit and customist
     gmake_temp_dir = str(tmp_path_factory.mktemp("gmake"))
     pymake_temp_dir = str(tmp_path_factory.mktemp("pymake"))
-    gmakeoptions['commandline1'] = ['-C', gmake_temp_dir] + gmakeoptions['commandline']
-    pymakeoptions['commandline1'] = ['-C', pymake_temp_dir] + pymakeoptions['commandline']
-    gmakeoptions['commandline2'] = ['-C', gmake_temp_dir] + gmakeoptions['commandline']
-    pymakeoptions['commandline2'] = ['-C', pymake_temp_dir] + pymakeoptions['commandline']
+    gmakeoptions['commandline'] = ['-C', gmake_temp_dir] + gmakeoptions['commandline']
+    pymakeoptions['commandline'] = ['-C', pymake_temp_dir] + pymakeoptions['commandline']
 
     if gmakeoptions['skip']:
         gmakepass, gmakemsg = True, ''
     else:
         gmakepass, gmakemsg = run_test(makefile, [gmake],
-                                      makefile + '.gmakelog', gmakeoptions)
+                                      makefile + '.gmakelog', gmakeoptions, [gmakeoptions['commandline']])
 
     if gmakeoptions['pass']:
         if not gmakepass:
@@ -179,7 +186,7 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
         pymakepass, pymakemsg = True, ''
     else:
         pymakepass, pymakemsg = run_test(makefile, pymake,
-                                        makefile + '.pymakelog', pymakeoptions)
+                                        makefile + '.pymakelog', pymakeoptions, [pymakeoptions['commandline']])
 
     if pymakeoptions['pass']:
         if not pymakepass:
