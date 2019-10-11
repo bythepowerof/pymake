@@ -176,7 +176,7 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
     gmake_temp_dir = str(tmp_path_factory.mktemp("gmake"))
     pymake_temp_dir = str(tmp_path_factory.mktemp("pymake"))
     gmakeoptions['commandline'] = ['-f', os.path.abspath(makefile), '-C', gmake_temp_dir] + cline
-    pymakeoptions['commandline1'] = ['-f', os.path.abspath(makefile), '-y', '-C', pymake_temp_dir] + cline
+    pymakeoptions['commandline1'] = ['-f', os.path.abspath(makefile), '-y', '-s', '-C', pymake_temp_dir] + cline
     pymakeoptions['commandline2'] = ['-z', '-', '-C', pymake_temp_dir] + cline
 
     if gmakeoptions['skip']:
