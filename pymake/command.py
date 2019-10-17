@@ -14,6 +14,8 @@ from optparse import OptionParser
 from . import data, parserdata, process, util
 from pymake import errors
 
+from pymake import makeyaml
+
 # TODO: If this ever goes from relocatable package to system-installed, this may need to be
 # a configured-in path.
 
@@ -115,7 +117,9 @@ class _MakeContext(object):
                                           targets=self.targets,
                                           keepgoing=self.options.keepgoing,
                                           silent=self.options.silent,
-                                          justprint=self.options.justprint)
+                                          justprint=self.options.justprint,
+                                          yamlout=self.options.yamlout,
+                                          yamlin=self.options.yamlin)
 
             self.restarts += 1
 
@@ -123,6 +127,8 @@ class _MakeContext(object):
                 self.ostmts.execute(self.makefile)
                 for f in self.options.makefiles:
                     self.makefile.include(f)
+                for f in self.options.yamlin:
+                    self.makefile.includeyaml(f)
                 self.makefile.finishparsing()
                 self.makefile.remakemakefiles(self.remakecb)
             except errors.MakeError as e:
@@ -130,6 +136,11 @@ class _MakeContext(object):
                 self.context.defer(self.cb, 2)
 
             return
+
+        if self.options.yamlout:
+            makeyaml.output(self.makefile)
+            exit()
+
 
         if len(self.targets) == 0:
             if self.makefile.defaulttarget is None:
@@ -200,6 +211,13 @@ def main(args, env, cwd, cb):
         op.add_option('-n', '--just-print', '--dry-run', '--recon',
                       action="store_true",
                       dest="justprint", default=False)
+        op.add_option('-y', '--yaml-out',
+                      action="store_true",
+                      dest="yamlout", default=False)
+        op.add_option('-z', '--yaml-in',
+                      dest="yamlin", 
+                      default=[],
+                      action='append')
 
         options, arguments1 = op.parse_args(parsemakeflags(env))
         options, arguments2 = op.parse_args(args, values=options)
@@ -229,6 +247,9 @@ def main(args, env, cwd, cb):
         if options.justprint:
             shortflags.append('n')
 
+        if options.yamlout:
+            shortflags.append('y')
+
         loglevel = logging.WARNING
         if options.verbose:
             loglevel = logging.DEBUG
@@ -251,6 +272,9 @@ def main(args, env, cwd, cb):
         if len(longflags):
             makeflags += ' ' + ' '.join(longflags)
 
+        if options.yamlin is not None:
+            longflags.append('-z%s' % (options.yamlin))
+
         logging.basicConfig(level=loglevel, **logkwargs)
 
         context = process.getcontext(options.jobcount)
@@ -259,7 +283,7 @@ def main(args, env, cwd, cb):
             print("make.py[%i]: Entering directory '%s'" % (makelevel, workdir))
             sys.stdout.flush()
 
-        if len(options.makefiles) == 0:
+        if len(options.makefiles) == 0 and len(options.yamlin) == 0:
             if os.path.exists(util.normaljoin(workdir, 'Makefile')):
                 options.makefiles.append('Makefile')
             else:

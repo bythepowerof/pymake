@@ -12,11 +12,11 @@ Please refer to [`ORIGINAL_README`](/ORIGINAL_README) and [`LICENSE`](/LICENSE)
 
 ### Build status:
 
-Platform    | Python | CI Status
-------------|:-------|:------------
-linux       | 3.7.x  | [![Build Status](https://travis-ci.com/fcostin/pymake.svg?branch=master)](https://travis-ci.com/fcostin/pymake)
-osx         | 3.7.3  | as above -- same ci build as linux.
-windows     | todo   | todo
+Platform    | Python | CI Status | Coverage
+------------|:-------|:------------|:--------
+linux       | 3.7.x  | [![Build Status](https://travis-ci.org/pythepowerof/pymake.svg?branch=master)](https://travis-ci.org/pythepowerof/pymake)| [![codecov](https://codecov.io/gh/pythepowerof/pymake/branch/master/graph/badge.svg)](https://codecov.io/gh/pythepowerof/pymake)
+osx         | 3.7.3  | as above -- same ci build as linux. 
+windows     | todo   | todo | todo
 
 
 ### Development - how to run the test suite:

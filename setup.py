@@ -10,6 +10,7 @@ setup(name='pymake',
           },
       include_package_data=False,
       zip_safe=False,
+      install_requires=[' ruamel.yaml'],
       entry_points={
           'console_scripts': [
               'pymake=pymake.cli.main:main'

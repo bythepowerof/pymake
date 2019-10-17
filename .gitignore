@@ -5,3 +5,17 @@ tests/*makelog
 .coverage
 .coverage.*
 coverage.xml
+.vscode/
+assets/
+bar/
+dummy
+foo/
+host_prog
+report.html
+src/
+subd/
+testfile
+tests/dummy
+tests/host_prog
+tests/src/
+tests/subd/
