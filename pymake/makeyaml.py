@@ -25,33 +25,30 @@ def parsefile(yaml_file, makefile):
 
     vars = []
 
-    for k,v in all_config_data['variables'].items():
-        if '\n' in v:
-            vars.append("define {}\n{}\nendef".format(k, preserveliteral(v)))
-        else:
-            vars.append("{} = {}".format(k, v))
-        # print("\n".join(vars))
+    if 'variables' in all_config_data:
+        for k,v in all_config_data['variables'].items():
+            if '\n' in v:
+                vars.append("define {}\n{}\nendef".format(k, preserveliteral(v)))
+            else:
+                vars.append("{} = {}".format(k, v))
 
-    for v in all_config_data['rules']:
-        if 'prereqs' not in v:
-            v['prereqs'] = []
+    if 'rules' in all_config_data:
+        for v in all_config_data['rules']:
+            if 'prereqs' not in v:
+                v['prereqs'] = []
 
-        if v['doublecolon']:
-            dc = ' :: '
-        else:
-            dc = ' : '
+            if v['doublecolon']:
+                dc = ' :: '
+            else:
+                dc = ' : '
 
-        if 'targetpatterns' in v:
-            vars.append("{} {} {}: {}".format(' '.join(v['targets']), dc, ' '.join(v['targetpatterns']), ' '.join(v['prereqs'])))
-        else:
-            vars.append("{} {} {}".format(' '.join(v['targets']), dc, ' '.join(v['prereqs'])))
+            if 'targetpatterns' in v:
+                vars.append("{} {} {}: {}".format(' '.join(v['targets']), dc, ' '.join(v['targetpatterns']), ' '.join(v['prereqs'])))
+            else:
+                vars.append("{} {} {}".format(' '.join(v['targets']), dc, ' '.join(v['prereqs'])))
 
-        for c in v['commands']:
-            vars.append('\t{}'.format(c))
-
-    print("here")
-    print("\n".join(vars))
-    print("here")
+            for c in v['commands']:
+                vars.append('\t{}'.format(c))
 
     parser.parsestring("\n".join(vars), 'xx').execute(makefile)
 
@@ -61,9 +58,12 @@ def output(makefile):
     ruleaddr = {}
     ruleempty = {}
 
+    # some keys to ignore for kmake
+    skip_keys = ['.PYMAKE', 'MAKE', 'MAKEFLAGS', 'MAKELEVEL']
+    allow_types = [data.Variables.SOURCE_OVERRIDE, data.Variables.SOURCE_COMMANDLINE, data.Variables.SOURCE_MAKEFILE]
+
     for v in makefile.variables:
-        if v[2] in [data.Variables.SOURCE_OVERRIDE, data.Variables.SOURCE_COMMANDLINE, data.Variables.SOURCE_MAKEFILE]:
-            # output['variables'][v[0]] = makefile.variables.get(v[0], False)[2]
+        if v[2] in allow_types and v[0] not in skip_keys:    
             output['variables'][v[0]] = preserveliteral(makefile.variables.get(v[0], False)[2], escape=True)
 
     # targets
@@ -110,6 +110,11 @@ def output(makefile):
                 ruleempty[k] = rule
             else:
                 ruleaddr[thisrule] = rule
+
+    if output['variables'] == {}:
+        del output['variables']
+    if output['rules'] == []:
+        del output['rules']
 
     yaml.dump(output, sys.stdout)
 
