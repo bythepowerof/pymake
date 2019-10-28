@@ -1,7 +1,24 @@
-pymake + python 3 patches
+pymake + python 3 patches + YAML support
 =========================
 
 Fork of [https://github.com/mozilla/pymake](https://github.com/mozilla/pymake) with additional patches for Python 3, breaking Python 2 support.
+This builds on [https://github.com/fcostin/pymake](https://github.com/fcostin/pymake) where the python 3 patching was done
+This repo adds support to export and import to YAML
+```
+-y: generate yaml from the makefile and includes (you also need -s as it dumps to SDTOUT)
+-z <file|->: read make configuration from file or - to read from STDIN
+```
+You can do 
+```
+pymake -s -y | pymake -z -
+```
+to test your makefile works as YAML
+
+Which is exactly what the test suite does. Not all the tests pass so some are skipped, so it's not a full implementation. I think this is mainly from double handling of escape characters.
+
+### Docker
+
+This is available as an alpine docker image [bythepowerof/pymake:latest](https://cloud.docker.com/u/bythepowerof/repository/docker/bythepowerof/pymake) where pymake is the `ENTRYPOINT`
 
 ### What is pymake?
 
