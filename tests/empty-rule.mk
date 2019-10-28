@@ -1,5 +1,4 @@
-﻿#T yamlskip
-all: obj
+﻿all: obj
 	$(MAKE) -f $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) obj
 
 obj: header
