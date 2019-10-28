@@ -2,7 +2,7 @@
 	$(MAKE) -f $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST)) obj
 
 obj: header
-
+#T yamlskip
 	# Subtlety: make prints the source code of this shell snippet
 	# while executing it. But the test harness looks in the stdout
 	# from make for a certain special failure token to decide if

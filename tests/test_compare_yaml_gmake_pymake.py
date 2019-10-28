@@ -99,8 +99,11 @@ def modify_dmap_with_scenario_directives(dmap, makefile):
         for line in mdata:
             line = line.strip()
             m = tre.search(line)
+
+            # do each line as some makefiles don't allow a comment on the first line
             if m is None:
-                break
+                continue
+            #    break
 
             make, key, data = m.group(1, 2, 3)
             d = dmap[make]
