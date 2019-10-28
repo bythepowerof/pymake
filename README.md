@@ -14,7 +14,7 @@ Please refer to [`ORIGINAL_README`](/ORIGINAL_README) and [`LICENSE`](/LICENSE)
 
 Platform    | Python | CI Status | Coverage
 ------------|:-------|:------------|:--------
-linux       | 3.7.x  | [![Build Status](https://travis-ci.org/bythepowerof/pymake.svg?branch=master)](https://travis-ci.org/bythepowerof/pymake)| [![codecov](https://codecov.io/gh/pythepowerof/pymake/branch/master/graph/badge.svg)](https://codecov.io/gh/pythepowerof/pymake)
+linux       | 3.7.x  | [![Build Status](https://travis-ci.org/bythepowerof/pymake.svg?branch=master)](https://travis-ci.org/bythepowerof/pymake)| [![codecov](https://codecov.io/gh/bythepowerof/pymake/branch/master/graph/badge.svg)](https://codecov.io/gh/bythepowerof/pymake)
 osx         | 3.7.3  | as above -- same ci build as linux. 
 windows     | todo   | todo | todo
 
