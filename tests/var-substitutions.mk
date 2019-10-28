@@ -1,3 +1,4 @@
+#T yamlskip
 SIMPLEVAR = aabb.cc
 SIMPLEPERCENT = test_value%extra
 

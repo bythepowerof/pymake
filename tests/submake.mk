@@ -1,4 +1,5 @@
 #T commandline: ['CVAR=c val=spac\\ed', 'OVAL=cline', 'OVAL2=cline2']
+#T yamlskip
 
 export EVAR = eval
 override OVAL = makefile

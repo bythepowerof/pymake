@@ -1,3 +1,4 @@
+#T yamlskip
 $(shell \
 if ! test -f include-dynamic.inc; then \
   echo "TESTVAR = oldval" > include-dynamic.inc; \

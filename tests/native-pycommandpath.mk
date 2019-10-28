@@ -1,4 +1,5 @@
 #T gmake skip
+#T yamlskip
 EXPECTED := some data
 
 # verify that we can load native command modules from

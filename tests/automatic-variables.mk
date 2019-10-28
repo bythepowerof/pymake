@@ -1,3 +1,4 @@
+#T yamlskip
 $(shell \
 mkdir -p src/subd; \
 mkdir subd; \

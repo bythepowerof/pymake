@@ -1,4 +1,5 @@
 #T returncode: 2
+#T yamlskip
 
 # Required include targets that fail should abort execution.
 

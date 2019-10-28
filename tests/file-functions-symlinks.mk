@@ -1,4 +1,5 @@
 #T returncode-on: {'win32': 2}
+#T yamlskip
 $(shell \
 touch test.file; \
 ln -s test.file test.symlink; \

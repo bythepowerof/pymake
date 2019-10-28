@@ -1,4 +1,5 @@
 #T grep-for: "info-printed\ninfo-nth"
+#T yamlskip
 all:
 
 INFO = info-printed

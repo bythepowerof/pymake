@@ -1,3 +1,4 @@
+#T yamlskip
 #T commandline: ['VAR=all', '$(VAR)']
 
 all:

@@ -1,3 +1,4 @@
+#T yamlskip
 ifdef __WIN32__
 PS:=\\#
 else

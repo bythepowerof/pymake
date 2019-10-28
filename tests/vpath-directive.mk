@@ -1,4 +1,6 @@
+#T yamlskip
 # On Windows, MSYS make takes Unix paths but Pymake takes Windows paths
+#T yamlskip
 VPSEP := $(if $(and $(__WIN32__),$(.PYMAKE)),;,:)
 
 $(shell \

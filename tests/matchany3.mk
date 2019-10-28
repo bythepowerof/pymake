@@ -1,3 +1,4 @@
+#T yamlskip
 $(shell \
 echo "target" > target.in; \
 )

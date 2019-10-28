@@ -108,6 +108,8 @@ def modify_dmap_with_scenario_directives(dmap, makefile):
                 d['pass'] = False
             elif key == 'skip':
                 d['skip'] = True
+            elif key == 'yamlskip':
+                pass
             else:
                 raise RuntimeError("%s: Unexpected #T key: %s" % (makefile, key))
 

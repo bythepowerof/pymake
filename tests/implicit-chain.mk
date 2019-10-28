@@ -1,3 +1,4 @@
+#T yamlskip
 all: test.prog
 	test "$$(cat $<)" = "Program: Object: Source: test.source"
 	@echo TEST-PASS

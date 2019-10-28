@@ -1,3 +1,4 @@
+#T yamlskip
 test: VAR = value
 
 %.do:

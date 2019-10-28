@@ -1,4 +1,5 @@
 #T commandline: ['-j2']
+#T yamlskip
 
 # A submake shouldn't return control to the parent until it has actually finished doing everything.
 

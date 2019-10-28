@@ -1,4 +1,5 @@
 #T environment: {'ENVVAR': 'envval'}
+#T yamlskip
 
 VAR1 = val1
 VAR2 = val2

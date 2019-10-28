@@ -1,3 +1,4 @@
+#T yamlskip
 $(shell \
 mkdir foo; \
 touch test.in \

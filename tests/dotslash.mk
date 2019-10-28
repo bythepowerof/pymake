@@ -1,3 +1,4 @@
+#T yamlskip
 $(shell touch foo.in)
 
 all: foo.out

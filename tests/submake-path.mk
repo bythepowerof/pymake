@@ -1,4 +1,5 @@
 #T gmake skip
+#T yamlskip
 #T grep-for: "2f7cdd0b-7277-48c1-beaf-56cb0dbacb24"
 
 ifdef __WIN32__

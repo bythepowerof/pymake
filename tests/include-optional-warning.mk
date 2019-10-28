@@ -1,3 +1,4 @@
+#T yamlskip
 -include TEST-FAIL.mk
 
 all:

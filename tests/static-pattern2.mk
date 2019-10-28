@@ -1,3 +1,4 @@
+#T yamlskip
 all: foo.out
 	test -f $^
 	@echo TEST-PASS

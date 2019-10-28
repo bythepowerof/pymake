@@ -1,3 +1,4 @@
+#T yamlskip
 VPATH = foo bar
 
 $(shell \

@@ -1,4 +1,5 @@
 #T environment: {'FOO': 'TEST'}
+#T yamlskip
 
 FOO += $(BAR)
 BAR := PASS

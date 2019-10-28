@@ -1,3 +1,4 @@
+#T yamlskip
 VAR = value
 VAR2 == value
 

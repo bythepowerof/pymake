@@ -1,3 +1,4 @@
+#T yamlskip
 # we should succeed in making foo.ooo from foo.ooo.test
 all: foo.ooo
 	@echo TEST-PASS

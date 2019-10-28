@@ -1,3 +1,4 @@
+#T yamlskip
 space = $(NULL) $(NULL)
 hello$(space)world$(space) = hellovalue
 

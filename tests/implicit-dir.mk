@@ -1,3 +1,4 @@
+#T yamlskip
 # Implicit rules have special instructions to deal with directories, so that a pattern rule which doesn't directly apply
 # may still be used.
 

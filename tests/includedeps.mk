@@ -1,4 +1,5 @@
 #T gmake skip
+#T yamlskip
 
 all: file1
 	@echo TEST-PASS

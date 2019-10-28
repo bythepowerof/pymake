@@ -1,3 +1,4 @@
+#T yamlskip
 $(shell touch foo.testfile1 foo.testfile2)
 
 # when a rule has commands and no prerequisites, should it be executed?

@@ -1,4 +1,5 @@
 #T commandline: ['CLINEVAR=clineval', 'CLINEVAR2=clineval2']
+#T yamlskip
 
 # this doesn't actually test overrides yet, because they aren't implemented in pymake,
 # but testing origins in general is important

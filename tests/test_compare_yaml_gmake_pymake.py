@@ -54,18 +54,12 @@ def run_test(makefile, make, logfile, options, commandline):
 
     i=0
 
-    # length = len(commandline)
-
     for c in commandline:
-    #     # if i == length - 1:
-    #     #     stdout = open('stdout', 'w')
         if i == 0:
             stderr = open('{}.stderr'.format(i), 'w')
-            # process = subprocess.Popen(c, stdin=stdin, stdout=stdout, stderr=stderr)
             process = subprocess.Popen(make + c, stdout=stdout, stderr=stderr, env=options['env'])
         else:
             stderr = open('{}.stderr'.format(i), 'w')
-            # process = subprocess.Popen(c, stdin=stdin, stdout=stdout, stderr=stderr)
             process = subprocess.Popen(make + c, stdin=stdin, stdout=stdout, stderr=stderr, env=options['env'])
 
         i += 1
@@ -74,11 +68,6 @@ def run_test(makefile, make, logfile, options, commandline):
         
     stdout, _ = process.communicate()
     retcode = process.returncode
-
-#     p = subprocess.Popen(make + options['commandline'], stdout=subprocess.PIPE,
-# stderr=subprocess.STDOUT, env=options['env'])
-#     stdout, _ = p.communicate()
-#     retcode = p.returncode
 
     stdout = stdout.decode('utf-8')
 
@@ -120,6 +109,8 @@ def modify_dmap_with_scenario_directives(dmap, makefile):
             if key == 'commandline':
                 assert make is None
                 d['commandline'].extend(data)
+                d['commandline1'].extend(data)
+                d['commandline2'].extend(data)
             elif key == 'returncode':
                 d['returncode'] = data
             elif key == 'returncode-on':
@@ -132,7 +123,7 @@ def modify_dmap_with_scenario_directives(dmap, makefile):
                 d['grepfor'] = data
             elif key == 'fail':
                 d['pass'] = False
-            elif key == 'skip':
+            elif key in ['skip', 'yamlskip']:
                 d['skip'] = True
             else:
                 raise RuntimeError("%s: Unexpected #T key: %s" % (makefile, key))
@@ -159,15 +150,18 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
         'returncode': 0,
         'grepfor': None,
         'env': dict(os.environ),
-        # 'commandline': cline,
         'pass': True,
         'skip': False,
+        'commandline': cline,
+        'commandline1': cline,
+        'commandline2': cline
         }
 
     gmakeoptions = ParentDict(options)
     pymakeoptions = ParentDict(options)
 
     dmap = {None: options, 'gmake ': gmakeoptions, 'pymake ': pymakeoptions}
+
     modify_dmap_with_scenario_directives(dmap, makefile)
 
     # fragile, rework: specialising different temp dirs has to be done after
@@ -175,9 +169,10 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
     # modify the default options that both makes will inherit and customist
     gmake_temp_dir = str(tmp_path_factory.mktemp("gmake"))
     pymake_temp_dir = str(tmp_path_factory.mktemp("pymake"))
-    gmakeoptions['commandline'] = ['-f', os.path.abspath(makefile), '-C', gmake_temp_dir] + cline
-    pymakeoptions['commandline1'] = ['-f', os.path.abspath(makefile), '-y', '-s', '-C', pymake_temp_dir] + cline
-    pymakeoptions['commandline2'] = ['-z', '-', '-C', pymake_temp_dir] + cline
+
+    gmakeoptions['commandline'] = ['-f', os.path.abspath(makefile), '-C', gmake_temp_dir] + gmakeoptions['commandline']
+    pymakeoptions['commandline1'] = ['-f', os.path.abspath(makefile), '-y', '-s', '-C', pymake_temp_dir] +   pymakeoptions['commandline1']
+    pymakeoptions['commandline2'] = ['-z', '-', '-C', pymake_temp_dir] +  pymakeoptions['commandline2']
 
     if gmakeoptions['skip']:
         gmakepass, gmakemsg = True, ''
@@ -214,4 +209,9 @@ def test_scenarios(makefile, tmp_path_factory, gmake, pymake):
     print("%-30.30s%-28.28s%-28.28s" % (os.path.basename(makefile),
                                         gmakemsg, pymakemsg))
     
+    # x = open('yamlout.txt', 'a')
+    # if pymakefails:
+    #     x.write("%-30.30s%-28.28s%-28.28s\n" % (os.path.basename(makefile),
+    #                                     gmakemsg, pymakemsg))
+    # x.close()
     assert not pymakefails

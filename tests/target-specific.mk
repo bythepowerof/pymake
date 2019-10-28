@@ -1,3 +1,4 @@
+#T yamlskip
 TESTVAR = anonval
 
 all: target.suffix target.suffix2 dummy host_test.py my.test1 my.test2

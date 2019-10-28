@@ -1,4 +1,5 @@
 #T environment: {'MAKEFLAGS': 'OVAR=oval'}
+#T yamlskip
 
 all:
 	test "$(OVAR)" = "oval"

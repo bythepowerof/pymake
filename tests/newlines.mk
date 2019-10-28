@@ -1,4 +1,5 @@
 #T gmake skip
+#T yamlskip
 
 # Test that we handle \\\n properly
 

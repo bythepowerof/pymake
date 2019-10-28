@@ -1,4 +1,5 @@
 #T commandline: ['-j2']
+#T yamlskip
 
 EXPECTED = target1:before:target2:1:target2:2:target2:3:target1:after
 

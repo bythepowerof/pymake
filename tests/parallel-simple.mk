@@ -1,4 +1,5 @@
 #T commandline: ['-j2']
+#T yamlskip
 
 # CAUTION: this makefile is also used by serial-toparallel.mk
 

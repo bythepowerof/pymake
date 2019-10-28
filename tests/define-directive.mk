@@ -1,3 +1,4 @@
+#T yamlskip
 define COMMANDS
 shellvar=hello
 test "$$shellvar" != "hello"

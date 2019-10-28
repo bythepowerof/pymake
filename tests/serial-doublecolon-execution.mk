@@ -1,3 +1,4 @@
+#T yamlskip
 #T commandline: ['-j3']
 
 # Commands of double-colon rules are always executed in order.

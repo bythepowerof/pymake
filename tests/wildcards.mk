@@ -1,3 +1,4 @@
+#T yamlskip
 $(shell \
 mkdir foo; \
 touch a.c b.c c.out foo/d.c; \

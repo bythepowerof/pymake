@@ -1,4 +1,5 @@
 #T gmake skip
+#T yamlskip
 #T returncode: 2
 #T grep-for: "Exception: info-exception"
 

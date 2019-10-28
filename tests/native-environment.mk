@@ -1,4 +1,5 @@
 #T gmake skip
+#T yamlskip
 export EXPECTED := some data
 
 PYCOMMANDPATH = $(TESTPATH)

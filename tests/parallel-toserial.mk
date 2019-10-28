@@ -1,4 +1,5 @@
 #T commandline: ['-j4']
+#T yamlskip
 
 # Test that -j1 in a submake has the proper effect.
 

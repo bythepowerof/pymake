@@ -1,3 +1,4 @@
+#T yamlskip
 # where do comments take effect?
 
 VAR = val1 # comment

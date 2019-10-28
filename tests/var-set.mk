@@ -1,4 +1,5 @@
 #T commandline: ['OBASIC=oval']
+#T yamlskip
 
 BASIC = val
 

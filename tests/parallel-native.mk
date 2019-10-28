@@ -1,4 +1,5 @@
 #T commandline: ['-j2']
+#T yamlskip
 
 # ensure that calling python commands doesn't block other targets
 ifndef SLEEP

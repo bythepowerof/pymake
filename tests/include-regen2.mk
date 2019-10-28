@@ -1,3 +1,4 @@
+#T yamlskip
 # make should make makefiles that it has rules for if they are
 # included
 include test.mk
