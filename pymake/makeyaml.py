@@ -42,8 +42,8 @@ def parsefile(yaml_file, makefile):
             else:
                 dc = ' : '
 
-            if 'targetpatterns' in v:
-                vars.append("{} {} {}: {}".format(' '.join(v['targets']), dc, ' '.join(v['targetpatterns']), ' '.join(v['prereqs'])))
+            if 'targetpattern' in v and v['targetpattern'] != "":
+                vars.append("{} {} {}: {}".format(' '.join(v['targets']), dc, v['targetpattern'], ' '.join(v['prereqs'])))
             else:
                 vars.append("{} {} {}".format(' '.join(v['targets']), dc, ' '.join(v['prereqs'])))
 
@@ -59,7 +59,7 @@ def output(makefile):
     ruleempty = {}
 
     # some keys to ignore for kmake
-    skip_keys = ['.PYMAKE', 'MAKE', 'MAKEFLAGS', 'MAKELEVEL']
+    skip_keys = ['.PYMAKE', 'MAKE', 'MAKEFLAGS', 'MAKELEVEL', 'CURDIR']
     allow_types = [data.Variables.SOURCE_OVERRIDE, data.Variables.SOURCE_COMMANDLINE, data.Variables.SOURCE_MAKEFILE]
 
     for v in makefile.variables:
@@ -97,9 +97,8 @@ def output(makefile):
                 rule['prereqs'] =  thisrule.prerequisites
 
             if hasattr(thisrule, 'targetpatterns'):
-                rule['targetpatterns'] = []
                 for t in thisrule.targetpatterns:
-                    rule['targetpatterns'].append(t.__str__())
+                    rule['targetpattern'] = t.__str__()
 
             for c in thisrule.commands:
                 rule['commands'].append(preserveliteral(c.to_source()))
